@@ -1,53 +1,31 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackEndReactWebApplication
+namespace Analyzer
 {
-    public class EodResponseInfo
+    public class EodResponseInfo : IComparable
     {
-        //[JsonProperty("date")]       
         public string date { get; set; }
-
-        //[JsonProperty("close")]
         public string close { get; set; }
-
-        //[JsonProperty("high")]
         public string high { get; set; }
-
-        //[JsonProperty("low")]
         public string low { get; set; }
-
-        //[JsonProperty("date")]
         public string open { get; set; }
-
-        //[JsonProperty("volume")]
         public string volume { get; set; }
-
-        //[JsonProperty("adjClose")]
         public string adjClose { get; set; }
-
-        //[JsonProperty("adjHigh")]
         public string adjHigh { get; set; }
-
-        //[JsonProperty("adjLow")]
         public string adjLow { get; set; }
-
-        //[JsonProperty("adjOpen")]
         public string adjOpen { get; set; }
-
-        //[JsonProperty("adjVolume")]
         public string adjVolume { get; set; }
-
-        //[JsonProperty("divCash")]
         public string divCash { get; set; }
-
-        //[JsonProperty("splitFactor")]
         public string splitFactor { get; set; }
+
+        public DateTime itemDate { get; set; }
 
         public EodResponseInfo()
         {            
@@ -63,15 +41,98 @@ namespace BackEndReactWebApplication
             adjOpen = "";
             adjVolume = "";
             divCash = "";
-            splitFactor = "";            
+            splitFactor = "";
+            
+            itemDate= DateTime.Now;
         }
+
+        int IComparable.CompareTo(Object obj)
+        {
+            EodResponseInfo itemComparingTo = (EodResponseInfo)obj;
+
+            if (this.itemDate.Date == itemComparingTo.itemDate.Date)
+            {
+                return 0;
+            }
+            if (this.itemDate.Date > itemComparingTo.itemDate.Date)
+            {
+                return 1;
+            }
+            return -1;
+        }
+
+        public void SetDateTime()
+        {
+            //Console.WriteLine("Need to convert {0}", this.date);
+            DateTime tempDateTime = Convert.ToDateTime(this.date.Substring(0, this.date.IndexOf("T", 0)));
+            this.itemDate = new DateTime(tempDateTime.Year, tempDateTime.Month, tempDateTime.Day, 0, 0, 0);
+            //Console.WriteLine("Ending up with {0}", this.itemDate);
+        }
+
+        public bool AreTheseEqual(EodResponseInfo itemComparingTo)
+        {
+            if (this.itemDate.Date == itemComparingTo.itemDate.Date)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool AreTheseGreaterOrEqual(EodResponseInfo itemComparingTo)
+        {
+            if (this.itemDate.Date == itemComparingTo.itemDate.Date)
+            {
+                return true;
+            }
+            if (this.itemDate.Date > itemComparingTo.itemDate.Date)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static long StaticBinarySearchForEodResponseEntry(List<EodResponseInfo> EodResponseInfoList,
+                                                                            EodResponseInfo aEodResponseInfoEntryToFind,
+                                                                            long startAddress,
+                                                                            long endAddress)
+        {
+            if (EodResponseInfoList.Count < 1)
+                return -1;
+
+            EodResponseInfo startEodResponseInfoItem = (EodResponseInfo)EodResponseInfoList[(int)startAddress];
+
+            if (startEodResponseInfoItem.AreTheseEqual(aEodResponseInfoEntryToFind))
+            {
+                return startAddress;
+            }
+
+            long middle = (endAddress >= startAddress) ? ((endAddress - startAddress) / 2 + startAddress) : ((startAddress - endAddress) / 2 + startAddress);
+
+            if ((middle < 0) || (middle >= endAddress))
+                return -1;
+
+            EodResponseInfo middleEodResponseInfoItem = (EodResponseInfo)EodResponseInfoList[(int)middle];
+
+
+            if (middleEodResponseInfoItem.AreTheseGreaterOrEqual(aEodResponseInfoEntryToFind))
+            {
+                return StaticBinarySearchForEodResponseEntry(EodResponseInfoList,
+                                                        aEodResponseInfoEntryToFind,
+                                                        startAddress,
+                                                        middle);
+            }
+            else
+            {
+                return StaticBinarySearchForEodResponseEntry(EodResponseInfoList,
+                                                        aEodResponseInfoEntryToFind,
+                                                        middle + 1,
+                                                        endAddress);
+            }
+        }
+
         public string ToString()
         {
             StringBuilder stringOut = new StringBuilder("");
-
-            //CultureInfo provider = CultureInfo.InvariantCulture;
-            //DateTime theDate = DateTime.ParseExact(date, "yy-MM-dd", provider);
-
             stringOut.Append("date: " + date.Substring(0,date.IndexOf("T",0)));
 
             CultureInfo provider = CultureInfo.InvariantCulture;
@@ -90,6 +151,7 @@ namespace BackEndReactWebApplication
             stringOut.Append(", adjVolume: " + adjVolume);
             stringOut.Append(", divCash: " + divCash);
             stringOut.Append(", splitFactor: " + splitFactor);
+            stringOut.Append(", DateTime: " + itemDate);
 
             return stringOut.ToString();
         }

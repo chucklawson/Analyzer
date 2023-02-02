@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
-namespace BackEndReactWebApplication
+namespace Analyzer
 {
     //{"operation":"OBTAIN_TICKER_VALUES","ticker":"nvda","startDate":"2023-04-28","endDate":"2023-01-30"}
        

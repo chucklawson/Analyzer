@@ -8,8 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.VisualBasic;
 
-namespace BackEndReactWebApplication
+namespace Analyzer
 {
     public class GetOneSetOfData
     {
@@ -49,7 +52,11 @@ namespace BackEndReactWebApplication
                 urlToGet = string.Concat(urlToGet, Url_StartDate);
                 //Console.WriteLine("UrlToGet: " + urlToGet);
 
-                urlToGet = string.Concat(urlToGet, requestFromClient.startDate.Trim());
+                DateTime originalStartDate = DateTime.Parse(requestFromClient.startDate.Trim());
+
+                string startingDateToUse = BuildDateToStartFrom(365,requestFromClient.startDate.Trim());
+                //Console.WriteLine("startingDateToUse: {0}", startingDateToUse);
+                urlToGet = string.Concat(urlToGet, startingDateToUse);
                 //Console.WriteLine("UrlToGet: " + urlToGet);
 
                 urlToGet = string.Concat(urlToGet, Url_EndDate);
@@ -61,7 +68,7 @@ namespace BackEndReactWebApplication
                 urlToGet = string.Concat(urlToGet, Url_Right.Trim());
                 //Console.WriteLine("UrlToGet: " + urlToGet);
 
-                Console.WriteLine("UrlToGet: " + urlToGet);
+                //Console.WriteLine("UrlToGet: " + urlToGet);
 
                     using (var request = new HttpRequestMessage(HttpMethod.Get, urlToGet))
                     {
@@ -72,20 +79,24 @@ namespace BackEndReactWebApplication
                             if (response.IsSuccessStatusCode)
                             {
                                 EodResponseInfo[] eodResponseInfos = JsonConvert.DeserializeObject<EodResponseInfo[]>(responseData);
-                            
+
                                 foreach (EodResponseInfo eodResponseInfo in eodResponseInfos)
                                 {
-                                    Console.WriteLine("eodResponseInfo: {0} ", eodResponseInfo.ToString());
+                                eodResponseInfo.SetDateTime();
                                 }
-                                Console.WriteLine("eodResponseInfos count: " + eodResponseInfos.Count());
+                            Array.Sort(eodResponseInfos);
+                            foreach (EodResponseInfo eodResponseInfo in eodResponseInfos)
+                                {
+                                    //Console.WriteLine("eodResponseInfo: {0} ", eodResponseInfo.ToString());
+                                }
+                            
+                               // Console.WriteLine("eodResponseInfos count: " + eodResponseInfos.Count());
 
-                            CalculatePrices calculatedPrices = new CalculatePrices(eodResponseInfos);
+                            CalculatePrices calculatedPrices = new CalculatePrices(originalStartDate,eodResponseInfos);
 
                             PackageForClient aPackageForClient = new PackageForClient(calculatedPrices.getChartData());
-                            //var now = DateTime.Now;
-
+                            
                             // Generate json from the array of objects EodResponseInfo[]
-                            //string jsonOut = JsonConvert.SerializeObject(eodResponseInfos);
                             string jsonOut = JsonConvert.SerializeObject(aPackageForClient);
 
 
@@ -103,7 +114,16 @@ namespace BackEndReactWebApplication
                     }
             }
         }
-        
-         
+
+        private static string BuildDateToStartFrom(int daysToGoBack,string referenceDateIn)
+        {
+            //Console.WriteLine("referenceDateIn: {0}", referenceDateIn);
+
+            DateTime referenceDate = DateTime.Parse(referenceDateIn);
+
+            DateTime dateToUseAsDate = referenceDate.AddDays((-1 * daysToGoBack));
+            //Console.WriteLine("dateToUseAsDate: {0}", dateToUseAsDate.ToString("yyyy-MM-dd"));
+            return dateToUseAsDate.ToString("yyyy-MM-dd");
+        }
     }
 }

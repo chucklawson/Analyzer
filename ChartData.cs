@@ -1,4 +1,4 @@
-﻿namespace BackEndReactWebApplication
+﻿namespace Analyzer
 {
     public class ChartData
     {

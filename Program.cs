@@ -1,7 +1,7 @@
 using System.Net.WebSockets;
 using System.Net;
 using System.Text;
-using BackEndReactWebApplication;
+using Analyzer;
 using System;
 using System.Collections;
 using Microsoft.AspNetCore.Builder;
@@ -31,8 +31,10 @@ var builder = WebApplication.CreateBuilder(args);
     }
 
     app.UseWebSockets();
-
+            // use this for development
             app.Map("/wss", async context =>
+            // use this for deployment to IIS
+            //app.Map("/ws", async context =>
             {
                 if (context.WebSockets.IsWebSocketRequest)
                 {
@@ -53,18 +55,18 @@ var builder = WebApplication.CreateBuilder(args);
 
                             byte[] buffer = new byte[1028];
                             var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                            Console.WriteLine("result count:" + result.Count);
+                            //Console.WriteLine("result count:" + result.Count);
 
-                            Console.WriteLine(BitConverter.ToString(buffer, 0, result.Count));
+                            //Console.WriteLine(BitConverter.ToString(buffer, 0, result.Count));
 
                             string resultAsString = System.Text.Encoding.UTF8.GetString(buffer);
 
-                            Console.WriteLine("resultAsString: " + resultAsString.Substring(0, result.Count));
-                            Console.WriteLine("resultAsString length: " + resultAsString.Substring(0, result.Count).Length);
+                            //Console.WriteLine("resultAsString: " + resultAsString.Substring(0, result.Count));
+                            //Console.WriteLine("resultAsString length: " + resultAsString.Substring(0, result.Count).Length);
 
                             RequestFromClient requestFromClient = JsonSerializer.Deserialize<RequestFromClient>(resultAsString.Substring(0, result.Count));
 
-                            Console.WriteLine("requestFromClient: {0} ", requestFromClient.ToString());
+                            //Console.WriteLine("requestFromClient: {0} ", requestFromClient.ToString());
                             
                             GetOneSetOfData.webSocket = webSocket;
                             GetOneSetOfData.requestFromClient = requestFromClient;

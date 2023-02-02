@@ -172,8 +172,8 @@ const TickerWebSocket = () => {
 
         
         <InvestmentComposedChar
-            width={800}
-            height={500}
+            width={700}
+            height={275}
             data={graphData}
             margin={{
                 top: 5,
