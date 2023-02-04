@@ -2,7 +2,7 @@
 using System.Net.WebSockets;
 using System.Text;
 
-namespace Analyzer.TopOfBook
+namespace Analyzer.MiddleWare.TopOfBook
 {
     public class GetTopOfBook
     {

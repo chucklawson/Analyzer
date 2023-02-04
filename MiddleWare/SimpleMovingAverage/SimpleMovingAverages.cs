@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using System.Reflection.Emit;
 using System;
 using System.Collections.Generic;
-using Analyzer.ObtainTickerData;
+using Analyzer.MiddleWare.ObtainTickerData;
 
-namespace Analyzer.SimpleMovingAverage
+namespace Analyzer.MiddleWare.SimpleMovingAverage
 {
     public class SimpleMovingAverages
     {

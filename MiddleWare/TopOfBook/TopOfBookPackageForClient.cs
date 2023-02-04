@@ -1,4 +1,4 @@
-﻿namespace Analyzer.TopOfBook
+﻿namespace Analyzer.MiddleWare.TopOfBook
 {
     public class TopOfBookPackageForClient
     {

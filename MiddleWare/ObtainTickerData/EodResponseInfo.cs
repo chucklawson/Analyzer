@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Analyzer.ObtainTickerData
+namespace Analyzer.MiddleWare.ObtainTickerData
 {
     public class EodResponseInfo : IComparable
     {

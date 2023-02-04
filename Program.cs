@@ -6,8 +6,8 @@ using System;
 using System.Collections;
 using Microsoft.AspNetCore.Builder;
 using System.Text.Json;
-using Analyzer.TopOfBook;
-using Analyzer.ObtainTickerData;
+using Analyzer.MiddleWare.ObtainTickerData;
+using Analyzer.MiddleWare.TopOfBook;
 
 const string OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
 const string OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";

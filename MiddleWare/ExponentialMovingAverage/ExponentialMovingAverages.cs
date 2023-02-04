@@ -1,8 +1,8 @@
-﻿using Analyzer.ObtainTickerData;
+﻿using Analyzer.MiddleWare.ObtainTickerData;
 using Microsoft.Extensions.Logging;
 using System.Reflection.Emit;
 
-namespace Analyzer.ExponentialMovingAverage
+namespace Analyzer.MiddleWare.ExponentialMovingAverage
 {
     public class ExponentialMovingAverages
     {

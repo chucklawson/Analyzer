@@ -1,6 +1,6 @@
-﻿using Analyzer.ExponentialMovingAverage;
-using Analyzer.ObtainTickerData;
-using Analyzer.SimpleMovingAverage;
+﻿using Analyzer.MiddleWare.ExponentialMovingAverage;
+using Analyzer.MiddleWare.ObtainTickerData;
+using Analyzer.MiddleWare.SimpleMovingAverage;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;

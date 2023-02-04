@@ -12,7 +12,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualBasic;
 
-namespace Analyzer.ObtainTickerData
+namespace Analyzer.MiddleWare.ObtainTickerData
 {
     public class GetOneSetOfData
     {
