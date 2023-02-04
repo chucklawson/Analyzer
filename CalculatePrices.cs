@@ -10,6 +10,7 @@ namespace Analyzer
 
         private List<ChartData> chartData = new List<ChartData>();
         private List<DataPoint> simpleMovingAverageData= new List<DataPoint>();
+        private List<DataPoint> exponentialMovingAverageData = new List<DataPoint>();
 
 
         public CalculatePrices() { }
@@ -17,6 +18,7 @@ namespace Analyzer
         public CalculatePrices(DateTime originalStartDate,EodResponseInfo[] eodResponseInfos)
         {
             simpleMovingAverageData=SimpleMovingAverages.buildSimpleMovingAverages(originalStartDate,eodResponseInfos, 33);
+            exponentialMovingAverageData = ExponentialMovingAverages.buildExponetialMovingAverages(originalStartDate, eodResponseInfos, 10);
             loadDailyPrices(originalStartDate,eodResponseInfos);
         }
 
@@ -34,9 +36,11 @@ namespace Analyzer
 
                 //if (DateTime.Compare(thisItmesDateTime,originalStartDate.AddDays(-1))>=0)
                 if (DateTime.Compare(eodResponseInfo.itemDate, originalStartDate) >= 0)
-                    {
+                {
                     aChartDataEntry.name = eodResponseInfo.itemDate.ToShortDateString();
                     aChartDataEntry.dailyPrices = Convert.ToDouble(eodResponseInfo.adjClose, provider);
+
+                    // now add simple moving agerages
                     DataPoint dataPointToFind = new DataPoint(eodResponseInfo.itemDate);
                     long addressOfMatchingSimpleMovingAverageDataPointEntry = DataPoint.StaticBinarySearchForDataPointEntry(simpleMovingAverageData,
                                                                             dataPointToFind,
@@ -48,9 +52,20 @@ namespace Analyzer
                     {
                         dataPointToUse = simpleMovingAverageData.ElementAt((int)addressOfMatchingSimpleMovingAverageDataPointEntry);
                     }
-
                     aChartDataEntry.simpleMovingAverage = dataPointToUse.calculatedValue;
-                    aChartDataEntry.expMovingAverage = aChartDataEntry.dailyPrices - 20;
+
+                    long addressOfMatchingExponentialAverageDataPointEntry = DataPoint.StaticBinarySearchForDataPointEntry(exponentialMovingAverageData,
+                                                                            dataPointToFind,
+                                                                            0L,
+                                                                            exponentialMovingAverageData.Count - 1);
+
+                    DataPoint exponentialDataPointToUse = new DataPoint(eodResponseInfo.itemDate);
+                    if (addressOfMatchingExponentialAverageDataPointEntry >= 0)
+                    {
+                        exponentialDataPointToUse = exponentialMovingAverageData.ElementAt((int)addressOfMatchingSimpleMovingAverageDataPointEntry);
+                    }
+                    //aChartDataEntry.expMovingAverage = aChartDataEntry.dailyPrices - 20;
+                    aChartDataEntry.expMovingAverage = exponentialDataPointToUse.calculatedValue;
                     chartData.Add(aChartDataEntry);
                 }
             }

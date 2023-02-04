@@ -18,7 +18,6 @@ namespace Analyzer
 
             // feed in EodResponseInfo[]
 
-            List<WebSocketSimpleMovingAverageMessage> webSocketSimpleMovingAverage = new List<WebSocketSimpleMovingAverageMessage>();
             try
             {
                 //Console.WriteLine("Entries to evaluate from eodResponseInfo {0} ", eodResponseInfo.Length);

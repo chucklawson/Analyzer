@@ -8,6 +8,7 @@ import styles from './TickerWebSocket.module.css';
 const TickerWebSocket = () => {
     const [val, setVal] = useState(null);
     const OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
+    const OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";
     const ws = useRef(null);
     const [tickerToGet, setTickerToGet] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -15,6 +16,7 @@ const TickerWebSocket = () => {
     const [updateTickerValue, setUpdateTickerValue] = useState(false);
 
     const [graphData, setGraphData] = useState({});
+    const [topOfBookData, setTopOfBookData] = useState([{}]);
     const widthOfStroke = 2;
 
 
@@ -75,6 +77,10 @@ const TickerWebSocket = () => {
             const sendJson = buildJsonToSend();
             console.log("sendJson: " + sendJson);
             ws.current.send(sendJson);
+
+            const jsonAsTtopOfBookToSend = buildJsonToSendTopOfBook();
+            ws.current.send(jsonAsTtopOfBookToSend);
+
             setUpdateTickerValueToFalse();
         }
         else {
@@ -82,6 +88,7 @@ const TickerWebSocket = () => {
         }
     }, [tickerToGet, startDate, endDate, updateTickerValue]);
 
+    /*
     const dataToDraw = {
         calculatedPrices: [{
             name: "",
@@ -90,6 +97,7 @@ const TickerWebSocket = () => {
             expMovingAverage: 0.0
         }]
     }
+    */
 
     const tickerSocket = () =>
     {
@@ -111,14 +119,32 @@ const TickerWebSocket = () => {
 
             if (event.data && event.data.length > 1) {
                 var obj = JSON.parse(event.data);
-
-                for (var calculatedPrices in obj) {
-                    if (obj.hasOwnProperty(calculatedPrices)) {
-                        console.log("Found calculatedPrices and the length is: " + obj[calculatedPrices].length);
-                        setGraphData(obj[calculatedPrices]);
+                //console.log("packageType: " + obj.packageType);
+                if (obj.packageType === OBTAIN_TICKER_VALUES) {
+                    for (var aProperty in obj) {
+                        console.log("aProperty: " + aProperty)
+                        //var packageType = obj.packageType
+                        if (aProperty === 'calculatedPrices') {
+                            console.log("Found calculatedPrices and the length is: " + obj[aProperty].length);
+                            setGraphData(obj[aProperty]);
+                        }
+                        else {
+                            console.log("Not the calculatedPrices");
+                        }
                     }
-                    else {
-                        console.log("No calculatedPrices");
+                }
+
+                if (obj.packageType === OBTAIN_TOP_OF_BOOK) {
+                    for (var aProperty in obj) {
+                        console.log("aProperty: " + aProperty)
+                        
+                        if (aProperty === 'topOfBookResponses') {
+                            console.log("Found topOfBookResponses and the length is: " + obj[aProperty].length);
+                            setTopOfBookData(obj[aProperty]);
+                        }
+                        else {
+                            console.log("Not the topOfBookResponses");
+                        }
                     }
                 }
             }
@@ -149,6 +175,16 @@ const TickerWebSocket = () => {
             
     }
 
+    const buildJsonToSendTopOfBook = () => {
+        const topOfBookParameters = {
+            operation: OBTAIN_TOP_OF_BOOK,
+            ticker: tickerToGet
+        }
+        const jsonToSend = JSON.stringify(topOfBookParameters);
+        //console.log("jsonToSend: " + jsonToSend);
+        return jsonToSend;
+    }
+
     const setUpdateTickerValueToFalse = () => {
         setUpdateTickerValue(false);
     }
@@ -170,7 +206,7 @@ const TickerWebSocket = () => {
     return <div className={`${styles['basic-control']}`}>Value: {val}
         <TickerInput onTickerValue={onTickerChangeHandler} currentTicker={tickerToGet} startDate={startDate} endDate={endDate} ></TickerInput>
 
-        
+        OPEN ${topOfBookData[0].open},   HIGH ${topOfBookData[0].high},   LOW ${topOfBookData[0].low},   LAST ${topOfBookData[0].last}
         <InvestmentComposedChar
             width={700}
             height={275}

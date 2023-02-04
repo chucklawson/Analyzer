@@ -7,11 +7,18 @@ using System.Collections;
 using Microsoft.AspNetCore.Builder;
 using System.Text.Json;
 
+
+const string OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
+const string OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";
+
 var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddRazorPages();
 
 
+
+
         var app = builder.Build();
+
 
 
 
@@ -38,11 +45,9 @@ var builder = WebApplication.CreateBuilder(args);
             {
                 if (context.WebSockets.IsWebSocketRequest)
                 {
-                    using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    using var webSocket = await context.WebSockets.AcceptWebSocketAsync();                    
 
-                    
-
-                    var rand = new Random();
+                    //var rand = new Random();
 
                     try
                     {
@@ -66,16 +71,26 @@ var builder = WebApplication.CreateBuilder(args);
 
                             RequestFromClient requestFromClient = JsonSerializer.Deserialize<RequestFromClient>(resultAsString.Substring(0, result.Count));
 
-                            //Console.WriteLine("requestFromClient: {0} ", requestFromClient.ToString());
-                            
-                            GetOneSetOfData.webSocket = webSocket;
-                            GetOneSetOfData.requestFromClient = requestFromClient;
+                            Console.WriteLine("requestFromClient: {0} ", requestFromClient.ToString());
 
-                            Task t = new Task(GetOneSetOfData.HTTP_GET);
-                            t.Start();
+                            if (requestFromClient.operation.CompareTo(OBTAIN_TICKER_VALUES) == 0)
+                            {
+                                GetOneSetOfData.webSocket = webSocket;
+                                GetOneSetOfData.requestFromClient = requestFromClient;
+                                Task t = new Task(GetOneSetOfData.HTTP_GET);
+                                t.Start();
+                            }  
+                            else if (requestFromClient.operation.CompareTo(OBTAIN_TOP_OF_BOOK) == 0)
+                            {
+                                GetTopOfBook.webSocket = webSocket;
+                                GetTopOfBook.requestFromClient = requestFromClient;
+                                Task t = new Task(GetTopOfBook.HTTP_GET);
+                                t.Start();
+                            }
+
 
                             //await Task.Delay(1000);
-                           
+
 
                             /*
                             long r = rand.NextInt64(0, 10);

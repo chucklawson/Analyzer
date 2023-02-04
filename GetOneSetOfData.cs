@@ -53,8 +53,8 @@ namespace Analyzer
                 //Console.WriteLine("UrlToGet: " + urlToGet);
 
                 DateTime originalStartDate = DateTime.Parse(requestFromClient.startDate.Trim());
-
-                string startingDateToUse = BuildDateToStartFrom(365,requestFromClient.startDate.Trim());
+                int yearsToLookBack = 1;
+                string startingDateToUse = BuildDateToStartFrom(yearsToLookBack, requestFromClient.startDate.Trim());
                 //Console.WriteLine("startingDateToUse: {0}", startingDateToUse);
                 urlToGet = string.Concat(urlToGet, startingDateToUse);
                 //Console.WriteLine("UrlToGet: " + urlToGet);
@@ -94,7 +94,7 @@ namespace Analyzer
 
                             CalculatePrices calculatedPrices = new CalculatePrices(originalStartDate,eodResponseInfos);
 
-                            PackageForClient aPackageForClient = new PackageForClient(calculatedPrices.getChartData());
+                            TickerPackageForClient aPackageForClient = new TickerPackageForClient(calculatedPrices.getChartData(), "OBTAIN_TICKER_VALUES");
                             
                             // Generate json from the array of objects EodResponseInfo[]
                             string jsonOut = JsonConvert.SerializeObject(aPackageForClient);
@@ -115,13 +115,14 @@ namespace Analyzer
             }
         }
 
-        private static string BuildDateToStartFrom(int daysToGoBack,string referenceDateIn)
+        private static string BuildDateToStartFrom(int yearsToLookBack,string referenceDateIn)
         {
             //Console.WriteLine("referenceDateIn: {0}", referenceDateIn);
 
             DateTime referenceDate = DateTime.Parse(referenceDateIn);
 
-            DateTime dateToUseAsDate = referenceDate.AddDays((-1 * daysToGoBack));
+            //DateTime dateToUseAsDate = referenceDate.AddDays((-1 * daysToGoBack));
+            DateTime dateToUseAsDate = referenceDate.AddYears(-yearsToLookBack);
             //Console.WriteLine("dateToUseAsDate: {0}", dateToUseAsDate.ToString("yyyy-MM-dd"));
             return dateToUseAsDate.ToString("yyyy-MM-dd");
         }
