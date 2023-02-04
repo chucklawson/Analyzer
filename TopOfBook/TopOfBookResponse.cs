@@ -1,4 +1,4 @@
-﻿namespace Analyzer
+﻿namespace Analyzer.TopOfBook
 {
     public class TopOfBookResponse
     {

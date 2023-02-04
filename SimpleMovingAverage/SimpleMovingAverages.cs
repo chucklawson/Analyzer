@@ -3,15 +3,16 @@ using Microsoft.Extensions.Logging;
 using System.Reflection.Emit;
 using System;
 using System.Collections.Generic;
+using Analyzer.ObtainTickerData;
 
-namespace Analyzer
+namespace Analyzer.SimpleMovingAverage
 {
     public class SimpleMovingAverages
     {
         public static List<DataPoint> calculatedAverages = new List<DataPoint>();
 
         public static List<DataPoint> buildSimpleMovingAverages(DateTime originalStartDate,
-                                                                EodResponseInfo[] eodResponseInfo,                                                                
+                                                                EodResponseInfo[] eodResponseInfo,
                                                                 long numberOfDaystoLookBack)
         {
             calculatedAverages.Clear();
@@ -36,20 +37,21 @@ namespace Analyzer
 
                     //Console.WriteLine("Comparing: {0} to: {1}", thisItmesDateTime.Date, originalStartDate.Date);
                     // these are the guys that should be getting sent back....
-                    
+
                     //Console.WriteLine("Comparing: {0} to: {1}, result: {2}", dataPointEntry.itemDate, originalStartDate.Date,
-                   //                                                         DateTime.Compare(dataPointEntry.itemDate, originalStartDate.Date));
+                    //                                                         DateTime.Compare(dataPointEntry.itemDate, originalStartDate.Date));
 
                     if (DateTime.Compare(dataPointEntry.itemDate, originalStartDate.Date) >= 0)
-                        {
+                    {
                         //Console.WriteLine("Adding thisItmesDateTime {0} ", thisItmesDateTime.ToString());
                         //Console.WriteLine("Adding itemDate {0} ", dataPointEntry.itemDate.ToShortDateString());
                         //Console.WriteLine("dataPointEntry {0}\n", dataPointEntry.ToString());
                         calculatedAverages.Add(dataPointEntry);
                     }
                 }
-            } catch (Exception ex)
-            { 
+            }
+            catch (Exception ex)
+            {
                 Console.Write("runGetRequest Exception: " + ex.Message);
             }
 
@@ -59,14 +61,14 @@ namespace Analyzer
         private static List<DataPoint> GenerateTheDataPointsSimpleMovingAverage(long numberOfDaystoLookBack,
                                                                                  EodResponseInfo[] eodResponseInfo)
         {
-            if ((long)eodResponseInfo.Length < numberOfDaystoLookBack)
+            if (eodResponseInfo.Length < numberOfDaystoLookBack)
                 return new List<DataPoint>();
 
             List<DataPoint> dataPoints = new List<DataPoint>();
 
             // this generates an up to the date average
 
-            for (long i = (int)numberOfDaystoLookBack; i < (eodResponseInfo.Length); ++i)
+            for (long i = (int)numberOfDaystoLookBack; i < eodResponseInfo.Length; ++i)
             {
                 double tempDouble = GenerateOneDataPoint(i, numberOfDaystoLookBack, eodResponseInfo);
                 DataPoint aDataPoint = new DataPoint(eodResponseInfo[(int)i].date, tempDouble);
@@ -87,17 +89,17 @@ namespace Analyzer
             if (startAddress < numberOfDaystoLookBack)
                 return 0.0;
 
-            long theSizeOfTheVector = (long)eodResponseInfo.Length;
+            long theSizeOfTheVector = eodResponseInfo.Length;
 
             // collect values up to the day you are evaluating
             double summedCloses = 0.0;
-            for (long i = ((startAddress + 1) - numberOfDaystoLookBack); i < (startAddress + 1); ++i)            
+            for (long i = startAddress + 1 - numberOfDaystoLookBack; i < startAddress + 1; ++i)
             {
-                summedCloses += Convert.ToDouble((eodResponseInfo[(int)i].close));
+                summedCloses += Convert.ToDouble(eodResponseInfo[(int)i].close);
             }
 
-            double devisor = (double)numberOfDaystoLookBack;
-            return (summedCloses / devisor);
+            double devisor = numberOfDaystoLookBack;
+            return summedCloses / devisor;
         }
     }
 }

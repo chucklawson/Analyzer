@@ -1,4 +1,6 @@
-﻿using Analyzer;
+﻿using Analyzer.ExponentialMovingAverage;
+using Analyzer.ObtainTickerData;
+using Analyzer.SimpleMovingAverage;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;

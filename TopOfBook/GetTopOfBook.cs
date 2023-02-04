@@ -2,7 +2,7 @@
 using System.Net.WebSockets;
 using System.Text;
 
-namespace Analyzer
+namespace Analyzer.TopOfBook
 {
     public class GetTopOfBook
     {
@@ -15,7 +15,7 @@ namespace Analyzer
 
         public static async void HTTP_GET()
         {
-            string Url_Left = "https://api.tiingo.com/iex/?tickers=";            
+            string Url_Left = "https://api.tiingo.com/iex/?tickers=";
             string Url_Right = "&token=d8f860c1c310308deb65f4ecdcd4d2d94711d6e3&format=json";
 
             using (var client = new HttpClient())

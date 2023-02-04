@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Analyzer.ObtainTickerData;
+using Microsoft.Extensions.Logging;
 using System.Reflection.Emit;
 
-namespace Analyzer
+namespace Analyzer.ExponentialMovingAverage
 {
     public class ExponentialMovingAverages
     {
@@ -57,7 +58,7 @@ namespace Analyzer
                                                                               EodResponseInfo[] eodResponseInfo)
         {
             //Console.WriteLine("eodResponseInfo.Length: {0}, howManyDaysInAverage: {1}", eodResponseInfo.Length, howManyDaysInAverage);
-            if ((long)eodResponseInfo.Length < howManyDaysInAverage)
+            if (eodResponseInfo.Length < howManyDaysInAverage)
                 return new List<DataPoint>();
 
             List<DataPoint> dataPoints = new List<DataPoint>();
@@ -67,7 +68,7 @@ namespace Analyzer
             double theFirstValue = GenerateOneDataPoint(referenceAddressForSimpleMovingAverage,
                                                         howManyDaysInAverage,
                                                         eodResponseInfo);
-            String theFirstDate = eodResponseInfo[(int)(howManyDaysInAverage - 1)].date;
+            string theFirstDate = eodResponseInfo[(int)(howManyDaysInAverage - 1)].date;
 
             //Console.WriteLine("theFirstDate: {0}, theFirstValue: {1}", theFirstDate, theFirstValue);
 
@@ -78,7 +79,7 @@ namespace Analyzer
 
 
             // this generates an up to the date average
-            for (long i = howManyDaysInAverage; i < (eodResponseInfo.Length); ++i)
+            for (long i = howManyDaysInAverage; i < eodResponseInfo.Length; ++i)
             {
                 double tempDouble = GenerateExponentialDataPointFormTwo(i,
                                                                         howManyDaysInAverage,
@@ -102,17 +103,17 @@ namespace Analyzer
             if (startAddress < numberOfDaystoLookBack)
                 return 0.0;
 
-            long theSizeOfTheVector = (long)eodResponseInfo.Length;
+            long theSizeOfTheVector = eodResponseInfo.Length;
 
             // collect values up to the day you are evaluating
             double summedCloses = 0.0;
-            for (long i = ((startAddress + 1) - numberOfDaystoLookBack); i < (startAddress + 1); ++i)
+            for (long i = startAddress + 1 - numberOfDaystoLookBack; i < startAddress + 1; ++i)
             {
                 summedCloses += Convert.ToDouble(eodResponseInfo[(int)i].adjClose);
             }
 
-            double devisor = (double)numberOfDaystoLookBack;
-            return (summedCloses / devisor);
+            double devisor = numberOfDaystoLookBack;
+            return summedCloses / devisor;
         }
         // Exponential Moving Average Calculation: form two
 
@@ -150,18 +151,18 @@ namespace Analyzer
             if (lengthOfAverage <= 0)
                 return 0.0;
 
-            long theSizeOfTheVector = (long)eodResponseInfo.Length;
-            if ((theSizeOfTheVector - 1) < currentAddressToEvaluate)
+            long theSizeOfTheVector = eodResponseInfo.Length;
+            if (theSizeOfTheVector - 1 < currentAddressToEvaluate)
                 return 0.0;
 
-            double numberOfTimePeriods = (double)lengthOfAverage;
-            double multiplier = (2.0 / (numberOfTimePeriods + 1.0));
+            double numberOfTimePeriods = lengthOfAverage;
+            double multiplier = 2.0 / (numberOfTimePeriods + 1.0);
 
             //EMA(current) = ( (Price(current) - EMA(prev) ) x Multiplier) + EMA(prev)
             double theCurrentDaysClose = Convert.ToDouble(eodResponseInfo[(int)currentAddressToEvaluate].adjClose);
             //double testValue=((theCurrentDaysClose-previousDataPoint)*multiplier);
-            double currentEMA = (((theCurrentDaysClose - previousDataPoint.calculatedValue) * multiplier)
-                    + previousDataPoint.calculatedValue);
+            double currentEMA = (theCurrentDaysClose - previousDataPoint.calculatedValue) * multiplier
+                    + previousDataPoint.calculatedValue;
             //previousDataPoint = currentEMA;
             return currentEMA;
         }

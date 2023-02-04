@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Analyzer
+namespace Analyzer.ObtainTickerData
 {
     public class EodResponseInfo : IComparable
     {
@@ -28,7 +28,7 @@ namespace Analyzer
         public DateTime itemDate { get; set; }
 
         public EodResponseInfo()
-        {            
+        {
             date = "";
             close = "";
             high = "";
@@ -42,19 +42,19 @@ namespace Analyzer
             adjVolume = "";
             divCash = "";
             splitFactor = "";
-            
-            itemDate= DateTime.Now;
+
+            itemDate = DateTime.Now;
         }
 
-        int IComparable.CompareTo(Object obj)
+        int IComparable.CompareTo(object obj)
         {
             EodResponseInfo itemComparingTo = (EodResponseInfo)obj;
 
-            if (this.itemDate.Date == itemComparingTo.itemDate.Date)
+            if (itemDate.Date == itemComparingTo.itemDate.Date)
             {
                 return 0;
             }
-            if (this.itemDate.Date > itemComparingTo.itemDate.Date)
+            if (itemDate.Date > itemComparingTo.itemDate.Date)
             {
                 return 1;
             }
@@ -64,14 +64,14 @@ namespace Analyzer
         public void SetDateTime()
         {
             //Console.WriteLine("Need to convert {0}", this.date);
-            DateTime tempDateTime = Convert.ToDateTime(this.date.Substring(0, this.date.IndexOf("T", 0)));
-            this.itemDate = new DateTime(tempDateTime.Year, tempDateTime.Month, tempDateTime.Day, 0, 0, 0);
+            DateTime tempDateTime = Convert.ToDateTime(date.Substring(0, date.IndexOf("T", 0)));
+            itemDate = new DateTime(tempDateTime.Year, tempDateTime.Month, tempDateTime.Day, 0, 0, 0);
             //Console.WriteLine("Ending up with {0}", this.itemDate);
         }
 
         public bool AreTheseEqual(EodResponseInfo itemComparingTo)
         {
-            if (this.itemDate.Date == itemComparingTo.itemDate.Date)
+            if (itemDate.Date == itemComparingTo.itemDate.Date)
             {
                 return true;
             }
@@ -80,11 +80,11 @@ namespace Analyzer
 
         public bool AreTheseGreaterOrEqual(EodResponseInfo itemComparingTo)
         {
-            if (this.itemDate.Date == itemComparingTo.itemDate.Date)
+            if (itemDate.Date == itemComparingTo.itemDate.Date)
             {
                 return true;
             }
-            if (this.itemDate.Date > itemComparingTo.itemDate.Date)
+            if (itemDate.Date > itemComparingTo.itemDate.Date)
             {
                 return true;
             }
@@ -99,19 +99,19 @@ namespace Analyzer
             if (EodResponseInfoList.Count < 1)
                 return -1;
 
-            EodResponseInfo startEodResponseInfoItem = (EodResponseInfo)EodResponseInfoList[(int)startAddress];
+            EodResponseInfo startEodResponseInfoItem = EodResponseInfoList[(int)startAddress];
 
             if (startEodResponseInfoItem.AreTheseEqual(aEodResponseInfoEntryToFind))
             {
                 return startAddress;
             }
 
-            long middle = (endAddress >= startAddress) ? ((endAddress - startAddress) / 2 + startAddress) : ((startAddress - endAddress) / 2 + startAddress);
+            long middle = endAddress >= startAddress ? (endAddress - startAddress) / 2 + startAddress : (startAddress - endAddress) / 2 + startAddress;
 
-            if ((middle < 0) || (middle >= endAddress))
+            if (middle < 0 || middle >= endAddress)
                 return -1;
 
-            EodResponseInfo middleEodResponseInfoItem = (EodResponseInfo)EodResponseInfoList[(int)middle];
+            EodResponseInfo middleEodResponseInfoItem = EodResponseInfoList[(int)middle];
 
 
             if (middleEodResponseInfoItem.AreTheseGreaterOrEqual(aEodResponseInfoEntryToFind))
@@ -133,7 +133,7 @@ namespace Analyzer
         public string ToString()
         {
             StringBuilder stringOut = new StringBuilder("");
-            stringOut.Append("date: " + date.Substring(0,date.IndexOf("T",0)));
+            stringOut.Append("date: " + date.Substring(0, date.IndexOf("T", 0)));
 
             CultureInfo provider = CultureInfo.InvariantCulture;
             DateTime aDate = DateTime.ParseExact(date.Substring(0, date.IndexOf("T", 0)), "yyyy-MM-dd", provider);
