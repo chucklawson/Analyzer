@@ -80,6 +80,7 @@ var builder = WebApplication.CreateBuilder(args);
                                 GetOneSetOfData.requestFromClient = requestFromClient;
                                 Task t = new Task(GetOneSetOfData.HTTP_GET);
                                 t.Start();
+                                await t;
                             }  
                             else if (requestFromClient.operation.CompareTo(OBTAIN_TOP_OF_BOOK) == 0)
                             {

@@ -69,6 +69,11 @@ namespace Analyzer.MiddleWare.ObtainTickerData
             //Console.WriteLine("Ending up with {0}", this.itemDate);
         }
 
+        public void ReSetDateTimeBasedOnDateTimeIn(DateTime DateTimeToAdjust)
+        {
+            itemDate = new DateTime(DateTimeToAdjust.Year, DateTimeToAdjust.Month, DateTimeToAdjust.Day, 0, 0, 0);            
+        }
+
         public bool AreTheseEqual(EodResponseInfo itemComparingTo)
         {
             if (itemDate.Date == itemComparingTo.itemDate.Date)
@@ -137,7 +142,7 @@ namespace Analyzer.MiddleWare.ObtainTickerData
 
             CultureInfo provider = CultureInfo.InvariantCulture;
             DateTime aDate = DateTime.ParseExact(date.Substring(0, date.IndexOf("T", 0)), "yyyy-MM-dd", provider);
-            Console.WriteLine("aDate: {0}", aDate.ToString());
+            //Console.WriteLine("aDate: {0}", aDate.ToString());
 
             stringOut.Append(", close: " + close);
             stringOut.Append(", high: " + high);

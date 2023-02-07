@@ -34,6 +34,8 @@ namespace Analyzer
             {
                 ChartData aChartDataEntry = new ChartData();
 
+                //Console.WriteLine("date Value to Convert: {0}", eodResponseInfo.date);
+
                 DateTime thisItmesDateTime = Convert.ToDateTime(eodResponseInfo.date);
 
                 //if (DateTime.Compare(thisItmesDateTime,originalStartDate.AddDays(-1))>=0)

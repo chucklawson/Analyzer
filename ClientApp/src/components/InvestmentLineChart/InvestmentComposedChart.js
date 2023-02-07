@@ -7,7 +7,8 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend
+    Legend,
+    Scatter
   } from 'recharts';
 
 
@@ -42,7 +43,7 @@ const InvestmentComposedChar = (props) => {
             {/*<Bar dataKey="pv" barSize={20} fill="#413ea0" />*/}
                 <Line type="monotone" dataKey="simpleMovingAverage" strokeWidth={props.lineWidth} stroke="#095cb5" />
                 <Line type="monotone" dataKey="expMovingAverage" strokeWidth={props.lineWidth} stroke="#b50909" />
-            {/*<Scatter dataKey="cnt" fill="red" />*/}
+                {/*<Scatter dataKey="dailyPrices" fill="#8884d8" /> */}
           </ComposedChart>
         </div>
       );

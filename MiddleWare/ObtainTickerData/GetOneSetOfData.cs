@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualBasic;
+using Analyzer.MiddleWare.TopOfBook;
 
 namespace Analyzer.MiddleWare.ObtainTickerData
 {
@@ -85,6 +86,51 @@ namespace Analyzer.MiddleWare.ObtainTickerData
                                 eodResponseInfo.SetDateTime();
                             }
                             Array.Sort(eodResponseInfos);
+
+                            // check to see if last entry in the group is todays date.
+                            //DateTime dateTimeToLocate = EodResponseInfo.MatchDateTimeUsedForEodResponseInfo(DateTime.Today);
+                            EodResponseInfo eodResponseInfoToFInd = new EodResponseInfo();
+                            eodResponseInfoToFInd.ReSetDateTimeBasedOnDateTimeIn(DateTime.Today);
+
+                            Console.WriteLine("eodResponseInfoToFInd: " + eodResponseInfoToFInd.itemDate);
+                            List<EodResponseInfo> eodResponseInfosToSearch = eodResponseInfos.ToList();
+                            eodResponseInfosToSearch.Sort();
+
+                            //Console.WriteLine("eodResponseInfosToSearch Count: " + eodResponseInfosToSearch.Count);
+
+                            long addressOfExistingEntry=EodResponseInfo.StaticBinarySearchForEodResponseEntry(eodResponseInfosToSearch,
+                                eodResponseInfoToFInd, 0L,
+                                eodResponseInfosToSearch.Count - 1);
+
+                            Console.WriteLine("Entry to find Address: " + (int)addressOfExistingEntry);
+
+                            if((int)addressOfExistingEntry == (eodResponseInfosToSearch.Count-1))
+                            {
+                                Console.WriteLine("Have todays entry.");
+                            }
+                            else {
+                                Console.WriteLine("Need todays entry.");
+                                GetTopOfBookForEodEntry.requestFromClient = requestFromClient;
+                                GetTopOfBookForEodEntry.currentValue = "";
+                                GetTopOfBookForEodEntry.HTTP_GET();
+                                // to do:  put a timer in here                                
+                                do
+                                { } while (GetTopOfBookForEodEntry.currentValue.Length < 1);
+                                eodResponseInfoToFInd.close = GetTopOfBookForEodEntry.currentValue;
+                                eodResponseInfoToFInd.adjClose = GetTopOfBookForEodEntry.currentValue;
+                                Console.WriteLine("GetTopOfBookForEodEntry.currentValue: " + GetTopOfBookForEodEntry.currentValue);
+                                eodResponseInfoToFInd.date = eodResponseInfoToFInd.itemDate.ToString("yyyy-MM-ddT00:00:00.000Z");
+
+                                //eodResponseInfoToFInd.date = "2022-02-06";
+                                Console.WriteLine("eodResponseInfoToFInd.date: " + eodResponseInfoToFInd.date);
+
+
+                                eodResponseInfoToFInd.close = GetTopOfBookForEodEntry.currentValue;
+                                eodResponseInfosToSearch.Add(eodResponseInfoToFInd);
+                                eodResponseInfos = eodResponseInfosToSearch.ToArray();
+                            }
+                            
+
                             foreach (EodResponseInfo eodResponseInfo in eodResponseInfos)
                             {
                                 //Console.WriteLine("eodResponseInfo: {0} ", eodResponseInfo.ToString());
