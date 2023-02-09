@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using System.Text.Json;
 using Analyzer.MiddleWare.ObtainTickerData;
 using Analyzer.MiddleWare.TopOfBook;
+using Analyzer.MiddleWare.Csv;
 
 const string OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
 const string OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";
@@ -88,6 +89,11 @@ var builder = WebApplication.CreateBuilder(args);
                                 GetTopOfBook.requestFromClient = requestFromClient;
                                 Task t = new Task(GetTopOfBook.HTTP_GET);
                                 t.Start();
+
+                                GetCsvData.webSocket = webSocket;
+                                GetCsvData.requestFromClient = requestFromClient;
+                                Task t2 = new Task(GetCsvData.parseACsvFile);
+                                t2.Start();
                             }
 
 

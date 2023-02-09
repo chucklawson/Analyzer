@@ -9,6 +9,7 @@ const TickerWebSocket = () => {
     const [val, setVal] = useState(null);
     const OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
     const OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";
+    const OBTAIN_CSV_TICKER_DATA = "OBTAIN_CSV_TICKER_DATA";
     const ws = useRef(null);
     const [tickerToGet, setTickerToGet] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -17,6 +18,7 @@ const TickerWebSocket = () => {
 
     const [graphData, setGraphData] = useState({});
     const [topOfBookData, setTopOfBookData] = useState([{}]);
+    const [csvTickerData, setCsvTickerData] = useState([{}]);
     const widthOfStroke = 2;
 
 
@@ -138,12 +140,26 @@ const TickerWebSocket = () => {
                     for (var aProperty in obj) {
                         console.log("aProperty: " + aProperty)
                         
-                        if (aProperty === 'topOfBookResponses') {
-                            console.log("Found topOfBookResponses and the length is: " + obj[aProperty].length);
+                        if (aProperty === 'topOfBookResponses') {                            
                             setTopOfBookData(obj[aProperty]);
+                            console.log("Found topOfBookResponses and the length is: " + obj[aProperty].length);
                         }
                         else {
                             console.log("Not the topOfBookResponses");
+                        }
+                    }
+                }
+
+                if (obj.packageType === OBTAIN_CSV_TICKER_DATA) {
+                    for (var aProperty in obj) {
+                        console.log("aProperty: " + aProperty)
+
+                        if (aProperty === 'csvTickerResponses') {                            
+                            setCsvTickerData(obj[aProperty]);
+                            console.log("Found csvTickerResponses and the length is: " + obj[aProperty].length);
+                        }
+                        else {
+                            console.log("Not the csvTickerResponses");
                         }
                     }
                 }

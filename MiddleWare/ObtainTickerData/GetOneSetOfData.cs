@@ -109,25 +109,42 @@ namespace Analyzer.MiddleWare.ObtainTickerData
                                 Console.WriteLine("Have todays entry.");
                             }
                             else {
-                                Console.WriteLine("Need todays entry.");
+                                //Console.WriteLine("Need todays entry.");
                                 GetTopOfBookForEodEntry.requestFromClient = requestFromClient;
                                 GetTopOfBookForEodEntry.currentValue = "";
                                 GetTopOfBookForEodEntry.HTTP_GET();
-                                // to do:  put a timer in here                                
+                                // to do:  put a timer in here
+                                bool timerExpired = false;
+                                void HandleTimer()
+                                {
+                                    Console.WriteLine("Interval elapsed");
+                                    timerExpired = true;
+                                }
+                                System.Timers.Timer timer = new (interval: 3000 );
+                                timer.Elapsed += (sender, e) => HandleTimer();
+                                timer.Start();
                                 do
-                                { } while (GetTopOfBookForEodEntry.currentValue.Length < 1);
+                                {  }
+                                while ((GetTopOfBookForEodEntry.currentValue.Length < 1)&&(timerExpired==false));
+                                timer.Dispose();
                                 eodResponseInfoToFInd.close = GetTopOfBookForEodEntry.currentValue;
-                                eodResponseInfoToFInd.adjClose = GetTopOfBookForEodEntry.currentValue;
-                                Console.WriteLine("GetTopOfBookForEodEntry.currentValue: " + GetTopOfBookForEodEntry.currentValue);
+                                eodResponseInfoToFInd.adjClose = GetTopOfBookForEodEntry.currentValue;                                
                                 eodResponseInfoToFInd.date = eodResponseInfoToFInd.itemDate.ToString("yyyy-MM-ddT00:00:00.000Z");
 
                                 //eodResponseInfoToFInd.date = "2022-02-06";
-                                Console.WriteLine("eodResponseInfoToFInd.date: " + eodResponseInfoToFInd.date);
-
+                                //Console.WriteLine("eodResponseInfoToFInd.date: " + eodResponseInfoToFInd.date);
 
                                 eodResponseInfoToFInd.close = GetTopOfBookForEodEntry.currentValue;
-                                eodResponseInfosToSearch.Add(eodResponseInfoToFInd);
-                                eodResponseInfos = eodResponseInfosToSearch.ToArray();
+
+                                Console.WriteLine("GetTopOfBookForEodEntry.currentValue: {0}", GetTopOfBookForEodEntry.currentValue);
+                                Console.WriteLine("timerExpired: {0}", timerExpired);
+                                if (timerExpired == false)
+                                {
+                                    Console.WriteLine("Adding todays top of book.");
+                                    
+                                    eodResponseInfosToSearch.Add(eodResponseInfoToFInd);
+                                    eodResponseInfos = eodResponseInfosToSearch.ToArray();
+                                }
                             }
                             
 
