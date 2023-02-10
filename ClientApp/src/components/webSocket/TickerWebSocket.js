@@ -23,50 +23,6 @@ const TickerWebSocket = () => {
 
 
 
-    //useEffect(() => {
-    //const socket = new WebSocket("wss://echo.websocket.events/");
-    /*
-    const socket = new WebSocket("wss://localhost:7109/wss");
-    socket.onopen = () => {
-        console.log("opened webSocket");
-    };
-
-    socket.onclose = () => {
-        console.log("closed the websocket");
-    };
-
-    socket.onmessage = (event) => {
-        console.log("Got the message:", event.data + ", origin of message: " + event.origin);
-        setVal(event.data);
-    };
-
-    ws.current = socket;
-
-    return () => {
-        socket.close();
-    };
-    */
-
-
-    /*
-    useEffect(() => {
-        if (ws.current === null) {
-            tickerSocket();
-        }
-        else if (updateTickerValue === true) {
-            console.log('Sending ticker to Get: ' + tickerToGet);
-            ws.current.send(tickerToGet);
-            setUpdateTickerValueToFalse();
-        }
-
-        return () => {
-            //    ws.current.close();
-            console.log('Returning from useEffect');
-        }
-
-    }, [tickerToGet, updateTickerValue]);
-    */
-
     // start the websocket
     useEffect(() => {
         tickerSocket();
@@ -89,17 +45,6 @@ const TickerWebSocket = () => {
             console.log('Reset: updateTickerValue to false: ' + updateTickerValue);
         }
     }, [tickerToGet, startDate, endDate, updateTickerValue]);
-
-    /*
-    const dataToDraw = {
-        calculatedPrices: [{
-            name: "",
-            dailyPrices: 0.0,
-            simpleMovingAverage: 0.0,
-            expMovingAverage: 0.0
-        }]
-    }
-    */
 
     const tickerSocket = () =>
     {
@@ -221,8 +166,9 @@ const TickerWebSocket = () => {
 
     return <div className={`${styles['basic-control']}`}>Value: {val}
         <TickerInput onTickerValue={onTickerChangeHandler} currentTicker={tickerToGet} startDate={startDate} endDate={endDate} ></TickerInput>
-
-        OPEN ${topOfBookData[0].open},   HIGH ${topOfBookData[0].high},   LOW ${topOfBookData[0].low},   LAST ${topOfBookData[0].last}
+        <div className="bg-green-100 text-1xl font-bold underline h-5">
+            OPEN ${topOfBookData[0].open},   HIGH ${topOfBookData[0].high},   LOW ${topOfBookData[0].low},   LAST ${topOfBookData[0].last}
+        </div>
         <InvestmentComposedChar
             width={700}
             height={275}

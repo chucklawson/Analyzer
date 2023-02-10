@@ -14,7 +14,7 @@ namespace Analyzer.MiddleWare.Csv
 
         public static async void parseACsvFile()
         {
-            string path = @"D:\Market\Holdings.csv";
+            string path = @"D:\Market\AnalyzerFiles\Holdings.csv";
             try
             {
                 using (StreamReader sr = new StreamReader(path))
@@ -26,10 +26,29 @@ namespace Analyzer.MiddleWare.Csv
                         string theLine = sr.ReadLine();
                         if (linesProcessed >= 3) { 
                             string ticker= theLine.Substring(0,theLine.IndexOf(','));
+
+                            string remainIngLine = theLine.Remove(0, (theLine.IndexOf(',') + 1));
+                            //Console.WriteLine(remainIngLine);
+                            
+                            // do not need the lots
+                            remainIngLine = remainIngLine.Remove(0,(remainIngLine.IndexOf(',') + 1));
+                            //Console.WriteLine(remainIngLine);
+
+                            string companyName= remainIngLine.Substring(0, remainIngLine.IndexOf(','));
+                            //Console.WriteLine("companyName: {0}", companyName);
+
+                            remainIngLine = remainIngLine.Remove(0, (remainIngLine.IndexOf(',') + 1));
+                            //Console.WriteLine(remainIngLine);
+
+                            string costBasis = remainIngLine.Substring(0, remainIngLine.IndexOf(','));
+                            //Console.WriteLine("costBasis: {0}", costBasis);
+
                             if (ticker.Length>0)
                             {
                                 CsvTickerResponse aCsvTickerResponse = new CsvTickerResponse();
                                 aCsvTickerResponse.ticker = ticker;
+                                aCsvTickerResponse.companyName = companyName;
+                                aCsvTickerResponse.costBasis = costBasis;
                                 Console.WriteLine(aCsvTickerResponse.ToString());
                                 csvTickerResponseList.Add(aCsvTickerResponse);
                             }

@@ -13,7 +13,7 @@ function App() {
     return (
         <div className="App">
             
-            <header className="App-header">
+            <header className="bg-green-100 text-3xl font-bold underline h-18">
                 Analyzer
             </header>
 
