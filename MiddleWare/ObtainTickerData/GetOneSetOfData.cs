@@ -120,7 +120,7 @@ namespace Analyzer.MiddleWare.ObtainTickerData
                                     Console.WriteLine("Interval elapsed");
                                     timerExpired = true;
                                 }
-                                System.Timers.Timer timer = new (interval: 3000 );
+                                System.Timers.Timer timer = new (interval: 1000 );
                                 timer.Elapsed += (sender, e) => HandleTimer();
                                 timer.Start();
                                 do

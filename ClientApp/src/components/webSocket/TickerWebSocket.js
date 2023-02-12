@@ -6,7 +6,7 @@ import InvestmentComposedChar from '../InvestmentLineChart/InvestmentComposedCha
 import styles from './TickerWebSocket.module.css';
 
 const TickerWebSocket = () => {
-    const [val, setVal] = useState(null);
+    
     const OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
     const OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";
     const OBTAIN_CSV_TICKER_DATA = "OBTAIN_CSV_TICKER_DATA";
@@ -15,6 +15,7 @@ const TickerWebSocket = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [updateTickerValue, setUpdateTickerValue] = useState(false);
+    const [showChart, setShowChart] = useState(false);
 
     const [graphData, setGraphData] = useState({});
     const [topOfBookData, setTopOfBookData] = useState([{}]);
@@ -40,6 +41,7 @@ const TickerWebSocket = () => {
             ws.current.send(jsonAsTtopOfBookToSend);
 
             setUpdateTickerValueToFalse();
+            setShowChart(true);
         }
         else {
             console.log('Reset: updateTickerValue to false: ' + updateTickerValue);
@@ -164,41 +166,30 @@ const TickerWebSocket = () => {
         }
     };
 
-    return <div className={`${styles['basic-control']}`}>Value: {val}
+    return <div className={`${styles['basic-control']}`}>
         <TickerInput onTickerValue={onTickerChangeHandler} currentTicker={tickerToGet} startDate={startDate} endDate={endDate} ></TickerInput>
-        <div className="bg-green-100 text-1xl font-bold underline h-5">
-            OPEN ${topOfBookData[0].open},   HIGH ${topOfBookData[0].high},   LOW ${topOfBookData[0].low},   LAST ${topOfBookData[0].last}
-        </div>
-        <InvestmentComposedChar
-            width={700}
-            height={275}
-            data={graphData}
-            margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5
-            }}
-            lineWidth={widthOfStroke}>
-
-        </InvestmentComposedChar>
         
+        {showChart === true ?
+            <div>
+                <div className="text-1xl text-green-600 font-bold underline h-5">
+                    OPEN ${topOfBookData[0].open},   HIGH ${topOfBookData[0].high},   LOW ${topOfBookData[0].low},   LAST ${topOfBookData[0].last}
+                </div>
+                <InvestmentComposedChar
+                    width={700}
+                    height={275}
+                    data={graphData}
+                    margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5
+                    }}
+                    lineWidth={widthOfStroke}>
 
-        {/*
-        <InvestmentLineChart
-            width={800}
-            height={400}
-            data={graphData}
-            margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5
-            }}>
-        </InvestmentLineChart>
-        */}
-
-    </div>;
+                    </InvestmentComposedChar>
+            </div>:
+            <React.Fragment />}
+    </div>
 };
 
     

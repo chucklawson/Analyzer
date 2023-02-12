@@ -13,14 +13,14 @@ function App() {
     return (
         <div className="App">
             
-            <header className="bg-green-100 text-3xl font-bold underline h-18">
+            <header className="bg-green-100 text-green-600 text-3xl font-bold underline h-18">
                 Analyzer
             </header>
 
             <TickerWebSocket></TickerWebSocket>
 
             <footer className="App-footer">
-                Footer
+                {/*Footer*/}
             </footer>
         </div>
     );
