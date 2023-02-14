@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 
-//import styled from 'styled-components';
-
-import styles from './TickerInput.module.css';
-
 const TickerInput = props => {
   const [enteredValue, setEnteredValue] = useState('');
     const [isValid, setIsValid] = useState(true);
@@ -38,39 +34,45 @@ const TickerInput = props => {
         setEndDate(event.target.value);
     };
 
-  return (
-    <form onSubmit={formSubmitHandler}>
-      {/*<FormControl invalid={!isValid}>*/}
-      <div className = {`${styles['form-control']} ${!isValid && styles.invalid}`}>
-             {/* <label>Ticker: {props.currentTicker} Start date: {props.startDate} End date: {props.endDate}</label> */}
-              
-              {/*<div className='form-conrol__control'>*/}
-              <div className='flex justify-between mx-auto'>
-                  <div>
-                  <label>Ticker: {enteredValue}</label>
-                  <input type="text" onChange={tickerInputChangeHandler} style={{
-                      borderColor: !isValid ? 'red' : 'black',
-                      background: !isValid ? 'salmon' : 'white'
-                      }} placeholder='VOO'/>
-                  </div>
-                  <div>
-                      <label>Startdate: {startDate}</label>
-                      <input type='date' min='2019-01-01' max='2023-12-31' value={startDate} onChange={startDateChangeHandler} />
-                  </div>
+    return (
+      <div className='col-start-3 col-span-5 p-7 m-10'>
+    <form onSubmit={formSubmitHandler}>      
+
+          <div className='bg-green-300 p-5 m-8 rounded-lg'>
+
+              <div className='grid grid-cols-4 justify-center'>
+                        <div>
+                            
+                              <label>Ticker: {enteredValue}</label>
+                              <input type="text" onChange={tickerInputChangeHandler} style={{
+                                  borderColor: !isValid ? 'red' : 'black',
+                                  background: !isValid ? 'salmon' : 'white'
+                                            }} placeholder='VOO' />                            
+                        </div>
+
+                        <div>
+                           
+                                <label>Startdate: {startDate}</label>                            
+                                <input type='date' min='2019-01-01' max='2023-12-31' value={startDate} onChange={startDateChangeHandler} />
+                            
+                        </div>
+
                   <div>
                       <label>Enddate: {endDate}</label>
                       <input type='date' min='2019-01-01' max='2023-12-31' value={endDate} onChange={endDateChangeHandler} />
                   </div>
-                  <div className='justify.center'>
-                      <button  className='bg-green-400 p-1 rounded-md mt-7' type='submit'>
-                          Update Chart
+
+                  <div className='justify-center'>
+                            <button className='bg-green-400 p-1 rounded-md mt-5 text-white hover:text-black' type='submit'>
+                                    Update Chart
                       </button>
                   </div>
               </div>
-      {/*</FormControl>*/}
+      
       </div>
           {/*<Button type="submit">Check Ticker</Button>*/}
-    </form>
+            </form>
+        </div>
   );
 };
 
