@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import TickerInput from '../TickerInput/TickerInput';
+import TickerButton from '../TickerButton/TickerButton';
+import TradingRangeIndicator from'../TradingRangeIndicator/TradingRangeIndicator';
 import InvestmentLineChart from '../InvestmentLineChart/InvestmentLineChart'
 import InvestmentComposedChar from '../InvestmentLineChart/InvestmentComposedChart';
 
-const TickerWebSocket = () => {
+const TickerWebSocket = (props) => {
     
     const OBTAIN_TICKER_VALUES = "OBTAIN_TICKER_VALUES";
     const OBTAIN_TOP_OF_BOOK = "OBTAIN_TOP_OF_BOOK";
@@ -174,6 +176,7 @@ const TickerWebSocket = () => {
             setStartDate(startDate.trim());
             setEndDate(endDate.trim());
             setUpdateTickerValue(true);
+            props.onSetHeader("Performance - " + tickerValue.trim());
             //console.log("tickerValue: " + tickerValue + ", startDate: " + startDate + ", endDate: " + endDate);            
         }
     }
@@ -192,54 +195,50 @@ const TickerWebSocket = () => {
         }
     };
 
+
+    const selectTickerButtonHandler = (tickerIn) => {
+        setTickerToGet(tickerIn);
+        setUpdateTickerValue(true);
+        props.onSetHeader("Performance - " + tickerIn);
+        console.log("tickerIn: " + tickerIn);
+    }
+
     return <div className='bg-gray-100 grid grid-cols-9 gap-4'>
 
         <div className='col-start-1 col-span-2 bg-blue-100 m-5 rounded-md'>
-            <button className='bg-green-400 p-1 rounded-md ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                AMD
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                AAPL
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                AMZN
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                BKE
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 5
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 6
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 7
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 8
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 9
-            </button>
-            <button className='bg-green-400 p-1 rounded-md ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 10
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 11
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 12
-            </button>
-            <button className='bg-green-400 p-1 rounded-md ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 13
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 14
-            </button>
-            <button className='bg-green-400 p-1 rounded-md  ml-2 mr-2 mt-1 text-white hover:text-black' style={{ width: '125px' }}>
-                Button 15
-            </button>
+            <TickerButton ticker='AMD' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='AAPL' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='AMZN' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='BKE' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='BRK-B' selectTickerButtonHandler={selectTickerButtonHandler} />   
+            <TickerButton ticker='COF' selectTickerButtonHandler={selectTickerButtonHandler} />   
+            <TickerButton ticker='COST' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='CTRA' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='DHR' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='DIS' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='DVN' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='EL' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='EMR' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='EVRI' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='F' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='GOOGL' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='HAL' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='HON' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='LIN' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='LLY' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='MO' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='MS' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='MSFT' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='NUE' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='NVDA' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='OXY' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='PXD' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='SBUX' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='STZ' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='TJX' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='VOO' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='WFC' selectTickerButtonHandler={selectTickerButtonHandler} />
+            <TickerButton ticker='WSM' selectTickerButtonHandler={selectTickerButtonHandler} />
         </div>
         
 
@@ -271,55 +270,14 @@ const TickerWebSocket = () => {
         </div>
 
         <div className='col-start-8 col-span-2'>
-           
-            <div className="relative h-1">
-                
-                <label class="form-label">Today's Range</label>
-                <div>
-                    <span className="inline-block mr-1"> {lowRangeValue} </span>  
-                
-                    <input
-                        type="range"
-                        class="
-                              inline-block
-                              form-range
-                              appearance-none
-                              w-2/3
-                              h-1
-                              p-0
-                              bg-gray-300
-                              rounded-full
-                              focus:outline-none focus:ring-0 focus:shadow-none
-                            "
-                        min="0"
-                        max="100"
-                        step="1.0"
-                        value={rangeValue}
-                        id="customRange1"
-                        disabled
-                    />
-                    <span className="inline-block ml-1">{highRangeValue}</span>  
-                </div>
-
-                <div className="text-gray-600 font-normal text-xs mt-3">
-                    Open: ${topOfBookData[0].open}, Low: ${topOfBookData[0].low}, High: ${topOfBookData[0].high}, Last: ${topOfBookData[0].last}
-                </div>
-
-            </div> 
-        </div>
-
-
-        
-
-
-        <div className='col-start-9 col-span-1'>
-            {/*
-            <p className="relative h-1">
-                <label for="customRange2" className="custom-range">Example range 2</label>
-                <input type="range" className="custom-range" id="customRange2" bg-gray-300 min="0" max="100" value='15' disabled/>
-            </p>
-            */}
-        </div>
+            <div className='m1'>
+                <TradingRangeIndicator heading="Today's Range" lowRangeValue={lowRangeValue} rangeValue={rangeValue} highRangeValue={highRangeValue} topOfBookData={topOfBookData} />
+            </div >
+            {/*<div className='m10 p8'>More stuff</div>*/}
+            <div className='m1'>
+                <TradingRangeIndicator heading="Second Range" lowRangeValue={lowRangeValue} rangeValue={rangeValue} highRangeValue={highRangeValue} topOfBookData={topOfBookData} />
+            </div>
+         </div>
         
     </div>
 };
