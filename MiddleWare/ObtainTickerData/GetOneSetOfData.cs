@@ -146,18 +146,32 @@ namespace Analyzer.MiddleWare.ObtainTickerData
                                     eodResponseInfos = eodResponseInfosToSearch.ToArray();
                                 }
                             }
-                            
 
+
+                            // Set this equal to the user selected start date.
+                            EodResponseInfo eodResponseMactchingStartDateIn = new EodResponseInfo();
+                            eodResponseMactchingStartDateIn.ReSetDateTimeBasedOnDateTimeIn(originalStartDate);
+
+                            
+                            // Could use calculated prices to get this information, but this seems to work
+                            EodResponseInfo firstDaysInfo = new EodResponseInfo();                            
+                            EodResponseInfo lastCandidate = new EodResponseInfo();
                             foreach (EodResponseInfo eodResponseInfo in eodResponseInfos)
                             {
-                                //Console.WriteLine("eodResponseInfo: {0} ", eodResponseInfo.ToString());
+                                if (eodResponseInfo.itemDate <= eodResponseMactchingStartDateIn.itemDate)
+                                {
+                                    firstDaysInfo = eodResponseInfo;
+                                }
+                                if (eodResponseInfo.itemDate < eodResponseInfoToFInd.itemDate) {
+                                    lastCandidate = eodResponseInfo;
+                                }
                             }
 
                             // Console.WriteLine("eodResponseInfos count: " + eodResponseInfos.Count());
 
                             CalculatePrices calculatedPrices = new CalculatePrices(originalStartDate, eodResponseInfos);
 
-                            TickerPackageForClient aPackageForClient = new TickerPackageForClient(calculatedPrices.getChartData(), "OBTAIN_TICKER_VALUES");
+                            TickerPackageForClient aPackageForClient = new TickerPackageForClient(calculatedPrices.getChartData(), firstDaysInfo.adjClose, lastCandidate.adjClose, "OBTAIN_TICKER_VALUES");
 
                             // Generate json from the array of objects EodResponseInfo[]
                             string jsonOut = JsonConvert.SerializeObject(aPackageForClient);

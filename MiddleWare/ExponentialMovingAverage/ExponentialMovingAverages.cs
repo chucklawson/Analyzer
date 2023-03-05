@@ -70,7 +70,7 @@ namespace Analyzer.MiddleWare.ExponentialMovingAverage
                                                         eodResponseInfo);
             string theFirstDate = eodResponseInfo[(int)(howManyDaysInAverage - 1)].date;
 
-            //Console.WriteLine("theFirstDate: {0}, theFirstValue: {1}", theFirstDate, theFirstValue);
+            Console.WriteLine("theFirstDate: {0}, theFirstValue: {1}", theFirstDate, theFirstValue);
 
             dataPoints.Add(new DataPoint(theFirstDate, theFirstValue));
 

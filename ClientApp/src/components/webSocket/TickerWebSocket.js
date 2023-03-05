@@ -26,6 +26,13 @@ const TickerWebSocket = (props) => {
     const [rangeValue, setRangeValue] = useState("50.0");
     const [lowRangeValue, setLowRangeValue] = useState("1.00");
     const [highRangeValue, setHighRangeValue] = useState("100");
+    const [firstReferenceClosingPrice, setFirstReferenceClosingPrice] = useState("");
+    const [lastReferenceClosingPrice, setLastReferenceClosingPrice] = useState("");
+    const [todaysGain, setTodaysGain] = useState(0.0);
+    const [todaysPercentageGain, setTodaysPercentageGain] = useState(0.0);
+    const [percentageChangeAcrossRange, setpercentageChangeAcrossRange] = useState(0.0);
+    const [updateRangeValues, setUpdateRangeValues] = useState(false);
+    const [gainIsPositive, setGainIsPositive] = useState(false);
 
 
 
@@ -39,6 +46,7 @@ const TickerWebSocket = (props) => {
 
     // request ticker data
     useEffect(() => {
+
         if (updateTickerValue === true) {
             console.log('Sending ticker to Get: ' + tickerToGet);
             const sendJson = buildJsonToSend();
@@ -49,6 +57,7 @@ const TickerWebSocket = (props) => {
             ws.current.send(jsonAsTtopOfBookToSend);
 
             setUpdateTickerValueToFalse();
+            
             setShowChart(true);
         }
         else {
@@ -56,11 +65,14 @@ const TickerWebSocket = (props) => {
         }
     }, [tickerToGet, startDate, endDate, updateTickerValue]);
 
+    
     useEffect(() => {  
-        if (typeof topOfBookData[0].low != 'undefined') {
+        if ((typeof topOfBookData[0].low !== 'undefined') && (updateRangeValues ===true)) {
             setRangeValues(topOfBookData);
-            }
-    }, [topOfBookData]);
+            setupdateRangeValuesToFalse();
+        }
+    }, [topOfBookData, updateRangeValues]);
+    
 
     const tickerSocket = () =>
     {
@@ -90,20 +102,25 @@ const TickerWebSocket = (props) => {
                         if (aProperty === 'calculatedPrices') {
                             console.log("Found calculatedPrices and the length is: " + obj[aProperty].length);
                             setGraphData(obj[aProperty]);
+                            setUpdateRangeValues(true);
                         }
                         else {
                             console.log("Not the calculatedPrices");
-                        }
+                        }                       
                     }
+                    setFirstReferenceClosingPrice(obj.firstReferenceClosingPrice);
+                    setLastReferenceClosingPrice(obj.lastReferenceClosingPrice);
+                    //console.log("firstReferenceClosingPrice: " + obj.firstReferenceClosingPrice);
+                    //console.log("lastReferenceClosingPrice: " + obj.lastReferenceClosingPrice);
                 }
 
                 if (obj.packageType === OBTAIN_TOP_OF_BOOK) {
-                    for (var aProperty in obj) {
-                        console.log("aProperty: " + aProperty)
+                    for (var aTopOfBookProperty in obj) {
+                        console.log("aTopOfBookProperty: " + aTopOfBookProperty)
                         
-                        if (aProperty === 'topOfBookResponses') {                            
-                            setTopOfBookData(obj[aProperty]);
-                            console.log("Found topOfBookResponses and the length is: " + obj[aProperty].length);                                                       
+                        if (aTopOfBookProperty === 'topOfBookResponses') {                            
+                            setTopOfBookData(obj[aTopOfBookProperty]);
+                            console.log("Found topOfBookResponses and the length is: " + obj[aTopOfBookProperty].length);
                         }
                         else {
                             console.log("Not the topOfBookResponses");
@@ -112,12 +129,12 @@ const TickerWebSocket = (props) => {
                 }
 
                 if (obj.packageType === OBTAIN_CSV_TICKER_DATA) {
-                    for (var aProperty in obj) {
-                        console.log("aProperty: " + aProperty)
+                    for (var aCsvProperty in obj) {
+                        console.log("aCsvProperty: " + aCsvProperty)
 
-                        if (aProperty === 'csvTickerResponses') {                            
-                            setCsvTickerData(obj[aProperty]);
-                            console.log("Found csvTickerResponses and the length is: " + obj[aProperty].length);
+                        if (aCsvProperty === 'csvTickerResponses') {                            
+                            setCsvTickerData(obj[aCsvProperty]);
+                            console.log("Found csvTickerResponses and the length is: " + obj[aCsvProperty].length);
                         }
                         else {
                             console.log("Not the csvTickerResponses");
@@ -166,6 +183,10 @@ const TickerWebSocket = (props) => {
         setUpdateTickerValue(false);
     }
 
+    const setupdateRangeValuesToFalse = () => {
+        setUpdateRangeValues(false);
+    }
+
     const onTickerChangeHandler = (tickerValue,startDate,endDate) => {
         if ((tickerValue.trim().length > 0)&&
             (tickerValue.trim().length > 0) &&
@@ -189,10 +210,54 @@ const TickerWebSocket = (props) => {
         let lastValue = parseFloat(topOfBookData[0].last);
         let currentRange = highValue - lowValue;
         let currentDistanceFromLow = lastValue - lowValue;
-        if (currentRange != 0.0) {
+        if (currentRange !== 0.0) {
             let percentage = ((currentDistanceFromLow / currentRange)*100.0);
             setRangeValue(percentage.toString());
         }
+        /*
+        console.log("lowValue" + lowValue);
+        console.log("highValue" + highValue);
+        console.log("lastValue" + lastValue);
+        console.log("currentRange" + currentRange);
+        console.log("lowValue" + lowValue);
+        console.log("currentDistanceFromLow" + currentDistanceFromLow);
+        */
+
+        let firstReferencePrice = parseFloat(firstReferenceClosingPrice);
+        let lastReferencePrice = parseFloat(lastReferenceClosingPrice);
+        let todaysChange = (lastValue - lastReferencePrice).toFixed(2);
+        let tempGain = false;
+        setTodaysGain(todaysChange);
+        if (todaysChange >= 0.0) {
+            setGainIsPositive(true);
+            tempGain = true;
+        }
+        else {
+            setGainIsPositive(false);
+        }
+        let todaysPercentageGain = 0.0;
+        if (lastReferencePrice !== 0.0) {
+            todaysPercentageGain = ((todaysChange / lastReferencePrice) * 100.0).toFixed(2);
+        }
+        setTodaysPercentageGain(todaysPercentageGain);
+        props.onSetTodaysPercentageChange(todaysPercentageGain, tempGain);
+
+        let changeAcrossRange = lastValue - firstReferencePrice;
+        let percentageChangeFullRange = 0.0;
+        if (firstReferencePrice !== 0.0) {
+            percentageChangeFullRange = ((changeAcrossRange / firstReferencePrice)*100.0).toFixed(2);
+        }
+        setpercentageChangeAcrossRange(percentageChangeFullRange); 
+        /*
+        console.log("firstReferencePrice" + firstReferencePrice);
+        console.log("lastReferencePrice" + lastReferencePrice);
+        console.log("todaysChange" + todaysChange);
+        console.log("todaysPercentageGain" + todaysPercentageGain);
+        console.log("changeAcrossRange" + changeAcrossRange);
+        console.log("percentageChangeFullRange" + percentageChangeFullRange);
+        */
+
+        
     };
 
 
@@ -213,7 +278,6 @@ const TickerWebSocket = (props) => {
             <TickerButton ticker='BRK-B' selectTickerButtonHandler={selectTickerButtonHandler} />   
             <TickerButton ticker='COF' selectTickerButtonHandler={selectTickerButtonHandler} />   
             <TickerButton ticker='COST' selectTickerButtonHandler={selectTickerButtonHandler} />
-            <TickerButton ticker='CTRA' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='DHR' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='DIS' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='DVN' selectTickerButtonHandler={selectTickerButtonHandler} />
@@ -232,7 +296,6 @@ const TickerWebSocket = (props) => {
             <TickerButton ticker='NUE' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='NVDA' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='OXY' selectTickerButtonHandler={selectTickerButtonHandler} />
-            <TickerButton ticker='PXD' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='SBUX' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='STZ' selectTickerButtonHandler={selectTickerButtonHandler} />
             <TickerButton ticker='TJX' selectTickerButtonHandler={selectTickerButtonHandler} />
@@ -250,6 +313,7 @@ const TickerWebSocket = (props) => {
                 <div className="text-1xl text-green-600 font-bold underline h-5">
                     OPEN ${topOfBookData[0].open},   HIGH ${topOfBookData[0].high},   LOW ${topOfBookData[0].low},   LAST ${topOfBookData[0].last}
                 </div>
+                
                 <div className='ml-20 mt-5'>
                     <InvestmentComposedChar
                             width={700}
@@ -271,12 +335,45 @@ const TickerWebSocket = (props) => {
 
         <div className='col-start-8 col-span-2'>
             <div className='m1'>
-                <TradingRangeIndicator heading="Today's Range" lowRangeValue={lowRangeValue} rangeValue={rangeValue} highRangeValue={highRangeValue} topOfBookData={topOfBookData} />
+                <TradingRangeIndicator heading="Last 12 Months" lowRangeValue={lowRangeValue} rangeValue={rangeValue} highRangeValue={highRangeValue} topOfBookData={topOfBookData} />
             </div >
+
             {/*<div className='m10 p8'>More stuff</div>*/}
             <div className='m1'>
-                <TradingRangeIndicator heading="Second Range" lowRangeValue={lowRangeValue} rangeValue={rangeValue} highRangeValue={highRangeValue} topOfBookData={topOfBookData} />
+                <TradingRangeIndicator heading="Today's Range" lowRangeValue={lowRangeValue} rangeValue={rangeValue} highRangeValue={highRangeValue} topOfBookData={topOfBookData} />
             </div>
+            <div className='p-4 mt-6 mb-10'>
+            {showChart === true ?
+                    <div className='justify-items-start'> 
+                        { gainIsPositive === true ?
+                            <div>
+                                <div className="text-1xl text-green-600 font-bold underline h-5 justify-items-start">
+                                    Today's Gain: ${todaysGain}
+                                </div>                        
+                                <div className="text-1xl text-green-600 font-bold underline h-5">
+                                    Today's % Gain: {todaysPercentageGain} %
+                                </div>
+                            </div> :
+                            <div>
+                                <div className="text-1xl text-red-600 font-bold underline h-5 justify-items-start">
+                                Today's Gain: ${todaysGain}
+                                </div>  
+                                <div className="text-1xl text-red-600 font-bold underline h-5">
+                                    Today's % Gain: {todaysPercentageGain} %
+                                </div>
+                           </div>}
+                        {percentageChangeAcrossRange >= 0.0 ?
+                            <div className="text-1xl text-green-600 font-bold underline h-5">
+                                Range change % Gain: {percentageChangeAcrossRange} %
+                            </div> :
+                            <div className="text-1xl text-red-600 font-bold underline h-5">
+                                Range change % Gain: {percentageChangeAcrossRange} %
+                            </div>
+                        }
+                </div> :
+                    <React.Fragment />}
+            </div>
+
          </div>
         
     </div>
